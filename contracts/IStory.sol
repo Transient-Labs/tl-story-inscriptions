@@ -22,14 +22,25 @@ pragma solidity ^0.8.14;
 
 interface IStory {
 
-    /// @notice this event is the cheapest storage option for stories
-    /// @dev this event provides the backbone of the Story Contract and how story chains can be comprised on-chain
-    event Story(uint256 indexed tokenId, address indexed authorAddress, string author, string story);
+    /// @notice event describing a creator story getting added to a token
+    /// @dev this events stores creator stories on chain in the event log
+    event CreatorStory(uint256 indexed tokenId, address indexed creatorAddress, string creatorName, string story);
+
+    /// @notice event describing a collector story getting added to a token
+    /// @dev this events stores collector stories on chain in the event log
+    event Story(uint256 indexed tokenId, address indexed collectorAddress, string collectorName, string story);
+
+    /// @notice function to let the creator add a story to the token they own
+    /// @dev depending on the implementation, this function may be restricted in various ways, such as
+    ///      limiting the number of times the creator may write a story.
+    /// @dev this function MUST emit the CreatorStory event each time it is called
+    /// @dev this function MUST implement logic to restrict access to only the creator
+    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external;
 
     /// @notice function to let collectors add a story to the token they own
     /// @dev depending on the implementation, this function may be restricted in various ways, such as
     ///      limiting the number of times a collector may write a story.
     /// @dev this function MUST emit the Story event each time it is called
-    /// @dev development testing showed that stories up to 5,000 words were less then 0.01 eth depending on the gas.
-    function addStory(uint256 tokenId, string calldata author, string calldata story) external;
+    /// @dev this function MUST implement logic to restrict access to only the owner of the token
+    function addStory(uint256 tokenId, string calldata collectorName, string calldata story) external;
 }

@@ -16,16 +16,8 @@ Sometimes collectors will tweet about why they collected a piece, but generally 
 This space keeps talking about storytelling… but has yet to have a good way to tell these stories immutably.
 
 ## 3. Story Contract Solution
-Originally worked on in collaboration with Michelle Viljoen, the Story Contract was developed to overcome the limitations of traditional storytelling.
+Originally developed as a collaboration with Michelle Viljoen, the Story Contract was developed to overcome the limitations of traditional storytelling.
 
-This contract allows both the artist and collector(s) can write their stories to the blockchain, where they are stored immutably and for infinitum. 
+This contract allows both the artist and collector(s) can write their stories to the blockchain, where they are stored immutably and for infinitum, without censorship. 
 
-Transient Labs plans to provide a new experience where people can explore stories, in general or for a specific piece of art. We are also working with marketplaces to get this integrated into their displays.
-
-### Technical Details
-The Story Contract is an interface that defines the following methods and events
-
-`function addStory(uint256 tokenId, string calldata author, string calldata story) external;` is the function that writes the story to the blockchain for a specific tokenId. Depending on the implementation, a story may be limited to one entry per collector.
-
-`event Story(uint256 indexed tokenId, address indexed authorAddress, string author, string story);` is the event that's emitted whenever a story is written to the blockchain for a token.
-
+Transient Labs plans to provide a new experience where people can explore stories, in general or for a specific piece of art. We are also working with marketplaces to get this integrated.
