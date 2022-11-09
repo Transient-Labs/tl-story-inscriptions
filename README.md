@@ -24,3 +24,9 @@ Transient Labs plans to provide a new experience where people can explore storie
 
 ## 4. ERC-165 Support
 The Story Contract supports ERC-165. The Interface ID is `0xd23ecb9`
+
+## 5. Gas Cost
+Based on local testing, the gas cost of a 5000 word story (a research paper) costs `694795 gas`. At 100 gwei gas, this coverts to a gas cost of `0.0694795 ETH`. This is extrememly gas efficient. Stories will also likely be much shorter in length and submitted when gas is lower.
+
+## License
+This code is copyright Transient Labs, Inc 2022 and is licensed under the Apache-2.0 license. The name "Story Contract" is also copyrighted by Transient Labs, Inc.

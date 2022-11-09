@@ -81,3 +81,10 @@ def test_interface_id_story_contract(story_contract):
 
 def test_interface_id_non_story_contract(non_story_contract):
     assert non_story_contract.supportsInterface("0xd23ecb9")
+
+
+##################### Gas Costs #####################
+def test_5000_word_story_gas_cost(story_contract):
+    story = "Lorem Ipsum" * 2500
+    story_contract.addCreatorStory(1, "XCOPY", story, {"from": accounts[0]})
+    story_contract.addStory(2, "NOT XCOPY", story, {"from": accounts[1]})
