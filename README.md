@@ -21,3 +21,6 @@ Originally developed as a collaboration with Michelle Viljoen, the Story Contrac
 This contract allows both the artist and collector(s) can write their stories to the blockchain, where they are stored immutably and for infinitum, without censorship. 
 
 Transient Labs plans to provide a new experience where people can explore stories, in general or for a specific piece of art. We are also working with marketplaces to get this integrated.
+
+## 4. ERC-165 Support
+The Story Contract supports ERC-165. The Interface ID is `0xd23ecb9`

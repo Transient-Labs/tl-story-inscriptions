@@ -1,4 +1,4 @@
-// SPDX-License-Identfier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @title Story Contract Interface
 /// @author transientlabs.xyz
@@ -18,7 +18,7 @@
                                                                         
 */
 
-pragma solidity ^0.8.14;
+pragma solidity 0.8.17;
 
 interface IStory {
 
