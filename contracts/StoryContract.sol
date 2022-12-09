@@ -2,6 +2,7 @@
 
 /// @title Story Contract
 /// @author transientlabs.xyz
+/// @version 1.0.0
 
 /**
     ____        _ __    __   ____  _ ________                     __ 
@@ -24,9 +25,20 @@ import "./IStory.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.7.3/contracts/utils/introspection/ERC165.sol";
 
 abstract contract StoryContract is IStory, ERC165 {
+    //================= Custom Errors =================//
+    error StoryNotEnabled();
+    error TokenDoesNotExist();
+    error NotTokenOwner();
 
     //================= State Variables =================//
     bool public storyEnabled;
+
+    //================= Modifiers =================//
+    /// @dev asserts that story must be enabled
+    modifier storyMustBeEnabled {
+        if (!storyEnabled) {revert StoryNotEnabled();}
+        _;
+    }
 
     //================= Constructor =================//
     /// @param enabled is a bool to enable or disable Story addition. This cannot be undone later.
@@ -36,16 +48,16 @@ abstract contract StoryContract is IStory, ERC165 {
 
     //================= IStory Functions =================//
     /// @dev see {IStory.addCreatorStory}
-    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external {
-        require(storyEnabled, "StoryContract: story addition is not enabled");
-        require(_tokenExists(tokenId), "StoryContract: token does not exist");
+    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external storyMustBeEnabled {
+        if (!_tokenExists(tokenId)) {revert TokenDoesNotExist();}
+        
         emit CreatorStory(tokenId, msg.sender, creatorName, story);
     }
 
     /// @dev see {IStory.addStory}
-    function addStory(uint256 tokenId, string calldata collectorName, string calldata story) external {
-        require(storyEnabled, "StoryContract: story addition is not enabled");
-        require(_isTokenOwner(msg.sender, tokenId), "StoryContract: caller is not token owner");
+    function addStory(uint256 tokenId, string calldata collectorName, string calldata story) external storyMustBeEnabled {
+        if (!_isTokenOwner(msg.sender, tokenId)) {revert NotTokenOwner();}
+
         emit Story(tokenId, msg.sender, collectorName, story);
     }
 
