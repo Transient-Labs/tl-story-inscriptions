@@ -1,5 +1,9 @@
-from brownie import Example721, accounts, reverts
+from brownie import Example721, accounts, reverts, web3
 import pytest
+
+STORY_NOT_ENABLED_ERROR = f"typed error: {web3.solidityKeccak(['string'], ['StoryNotEnabled()']).hex()[:10]}"
+TOKEN_DOES_NOT_EXIST_ERROR = f"typed error: {web3.solidityKeccak(['string'], ['TokenDoesNotExist()']).hex()[:10]}"
+NOT_TOKEN_OWNER_ERROR = f"typed error: {web3.solidityKeccak(['string'], ['NotTokenOwner()']).hex()[:10]}"
 
 @pytest.fixture()
 def story_contract():
@@ -26,7 +30,7 @@ def test_enabled_non_story_contract(non_story_contract):
 
 ##################### Creator Stories #####################
 def test_non_story_contract_creator_story(non_story_contract):
-    with reverts("StoryContract: story addition is not enabled"):
+    with reverts(STORY_NOT_ENABLED_ERROR):
         non_story_contract.addCreatorStory(1, "XCOPY", "I AM XCOPY", {"from": accounts[0]})
         non_story_contract.addCreatorStory(2, "XCOPY", "I AM XCOPY", {"from": accounts[0]})
         non_story_contract.addCreatorStory(3, "XCOPY", "I AM XCOPY", {"from": accounts[0]})
@@ -46,12 +50,12 @@ def test_story_contract_creator_story(story_contract):
     assert story_success
 
 def test_story_contract_nonexistent_token(story_contract):
-    with reverts("StoryContract: token does not exist"):
+    with reverts(TOKEN_DOES_NOT_EXIST_ERROR):
         story_contract.addCreatorStory(4, "XCOPY", "I AM XCOPY", {"from": accounts[0]})
 
 ##################### Collector Stories #####################
 def test_non_story_contract_story(non_story_contract):
-    with reverts("StoryContract: story addition is not enabled"):
+    with reverts(STORY_NOT_ENABLED_ERROR):
         non_story_contract.addStory(1, "XCOPY", "I AM XCOPY", {"from": accounts[0]})
         non_story_contract.addStory(2, "NOT XCOPY", "I AM NOT XCOPY", {"from": accounts[1]})
         non_story_contract.addStory(3, "NOT XCOPY", "I AM NOT XCOPY", {"from": accounts[2]})
@@ -72,7 +76,7 @@ def test_story_contract_story(story_contract):
 
 def test_story_contract_not_token_owner(story_contract):
     for i in range(1, 4):
-        with reverts("StoryContract: caller is not token owner"):
+        with reverts(NOT_TOKEN_OWNER_ERROR):
             story_contract.addStory(i, "NOT XCOPY", "I AM NOT XCOPY", {"from": accounts[i]})
 
 ##################### ERC165 #####################
