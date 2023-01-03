@@ -1,0 +1,10 @@
+[profile.default]
+src = 'src'
+out = 'out'
+libs = ['lib']
+remappings = [
+    'openzeppelin-upgradeable/=../../.brownie/packages/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.0/contracts/',
+    'openzeppelin/=../../.brownie/packages/OpenZeppelin/openzeppelin-contracts@4.8.0/contracts/',
+]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
