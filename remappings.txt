@@ -1,2 +1,0 @@
-openzeppelin-upgradeable/=../../.brownie/packages/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.0/contracts/
-openzeppelin/=../../.brownie/packages/OpenZeppelin/openzeppelin-contracts@4.8.0/contracts/
