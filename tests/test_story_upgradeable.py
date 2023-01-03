@@ -1,4 +1,4 @@
-from brownie import Example721, accounts, reverts, web3
+from brownie import Example721Upgradeable, accounts, reverts, web3
 import pytest
 
 STORY_NOT_ENABLED_ERROR = f"typed error: {web3.solidityKeccak(['string'], ['StoryNotEnabled()']).hex()[:10]}"
@@ -8,7 +8,8 @@ NOT_TOKEN_CREATOR_ERROR = f"typed error: {web3.solidityKeccak(['string'], ['NotT
 
 @pytest.fixture()
 def story_contract():
-    contract = Example721.deploy(True, {"from": accounts[0]})
+    contract = Example721Upgradeable.deploy({"from": accounts[0]})
+    contract.initialize(True, {"from": accounts[0]})
     contract.mint(3, {"from": accounts[0]})
     contract.transferFrom(accounts[0].address, accounts[1].address, 2)
     contract.transferFrom(accounts[0].address, accounts[2].address, 3)
@@ -16,11 +17,23 @@ def story_contract():
 
 @pytest.fixture()
 def non_story_contract():
-    contract = Example721.deploy(False, {"from": accounts[0]})
+    contract = Example721Upgradeable.deploy({"from": accounts[0]})
+    contract.initialize(False, {"from": accounts[0]})
     contract.mint(3, {"from": accounts[0]})
     contract.transferFrom(accounts[0].address, accounts[1].address, 2)
     contract.transferFrom(accounts[0].address, accounts[2].address, 3)
     return contract
+
+##################### Initialized State #####################
+def test_upgradeable_owner(story_contract, non_story_contract):
+    assert story_contract.owner() == accounts[0].address and non_story_contract.owner() == accounts[0].address
+
+def test_initialize_again(story_contract, non_story_contract):
+    with reverts():
+        story_contract.initialize(True, {"from": accounts[1]})
+        non_story_contract.initialize(False, {"from": accounts[1]})
+
+    assert story_contract.owner() == accounts[0].address and non_story_contract.owner() == accounts[0].address
 
 ##################### View Function #####################
 def test_enabled_story_contract(story_contract):

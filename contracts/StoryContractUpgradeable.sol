@@ -17,7 +17,8 @@ pragma solidity 0.8.17;
 
 ///////////////////// IMPORTS /////////////////////
 
-import { ERC165 } from "openzeppelin/utils/introspection/ERC165.sol";
+import { Initializable } from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
+import { ERC165Upgradeable } from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IStory } from "contracts/IStory.sol";
 
 ///////////////////// CUSTOM ERRORS /////////////////////
@@ -27,7 +28,7 @@ error TokenDoesNotExist();
 error NotTokenOwner();
 error NotTokenCreator();
 
-abstract contract StoryContract is IStory, ERC165 {
+abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
 
     ///////////////////// STORAGE VARIABLES /////////////////////
 
@@ -40,10 +41,14 @@ abstract contract StoryContract is IStory, ERC165 {
         _;
     }
 
-    ///////////////////// CONSTRUCTOR /////////////////////
+    ///////////////////// INITIALIZER /////////////////////
 
     /// @param enabled is a bool to enable or disable Story addition. This cannot be undone later.
-    constructor(bool enabled) {
+    function __StoryContractUpgradeable_init(bool enabled) internal {
+        __StoryContractUpgradeable_init_unchained(enabled);
+    }
+
+    function __StoryContractUpgradeable_init_unchained(bool enabled) internal {
         storyEnabled = enabled;
     }
 
@@ -60,7 +65,7 @@ abstract contract StoryContract is IStory, ERC165 {
     /// @dev see {IStory.addStory}
     function addStory(uint256 tokenId, string calldata collectorName, string calldata story) external storyMustBeEnabled {
         if (!_tokenExists(tokenId)) { revert TokenDoesNotExist(); }
-        if (!_isTokenOwner(msg.sender, tokenId)) { revert NotTokenOwner(); }
+        if (!_isTokenOwner(msg.sender, tokenId)) {revert NotTokenOwner();}
 
         emit Story(tokenId, msg.sender, collectorName, story);
     }
@@ -79,7 +84,7 @@ abstract contract StoryContract is IStory, ERC165 {
     ///////////////////// ERC-165 OVERRIDE /////////////////////
 
     /// @dev see {ERC165.supportsInterface}
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
-        return interfaceId == type(IStory).interfaceId || ERC165.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
+        return interfaceId == type(IStory).interfaceId || ERC165Upgradeable.supportsInterface(interfaceId);
     }
 }
