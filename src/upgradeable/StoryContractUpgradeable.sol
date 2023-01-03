@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// @title Story Contract
+/// @dev upgradeable (proxy really), inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// @version 1.2.0
+/// Version 2.0.0
 
 /*
     ____        _ __    __   ____  _ ________                     __ 
@@ -19,14 +20,8 @@ pragma solidity 0.8.17;
 
 import { Initializable } from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import { ERC165Upgradeable } from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import { IStory } from "contracts/IStory.sol";
+import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "src/IStory.sol";
 
-///////////////////// CUSTOM ERRORS /////////////////////
-
-error StoryNotEnabled();
-error TokenDoesNotExist();
-error NotTokenOwner();
-error NotTokenCreator();
 
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
 
@@ -37,7 +32,7 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     ///////////////////// MODIFIERS /////////////////////
 
     modifier storyMustBeEnabled {
-        if (!storyEnabled) {revert StoryNotEnabled();}
+        if (!storyEnabled) { revert StoryNotEnabled(); }
         _;
     }
 
@@ -48,13 +43,14 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
         __StoryContractUpgradeable_init_unchained(enabled);
     }
 
+    /// @param enabled is a bool to enable or disable Story addition. This cannot be undone later.
     function __StoryContractUpgradeable_init_unchained(bool enabled) internal {
         storyEnabled = enabled;
     }
 
     ///////////////////// STORY FUNCTIONS /////////////////////
 
-    /// @dev see {IStory.addCreatorStory}
+    /// @dev see { IStory.addCreatorStory }
     function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external storyMustBeEnabled {
         if (!_tokenExists(tokenId)) { revert TokenDoesNotExist(); }
         if (!_isCreator(msg.sender, tokenId)) { revert NotTokenCreator(); }
@@ -62,7 +58,7 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
         emit CreatorStory(tokenId, msg.sender, creatorName, story);
     }
 
-    /// @dev see {IStory.addStory}
+    /// @dev see { IStory.addStory }
     function addStory(uint256 tokenId, string calldata collectorName, string calldata story) external storyMustBeEnabled {
         if (!_tokenExists(tokenId)) { revert TokenDoesNotExist(); }
         if (!_isTokenOwner(msg.sender, tokenId)) {revert NotTokenOwner();}
@@ -70,20 +66,20 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
         emit Story(tokenId, msg.sender, collectorName, story);
     }
 
-    ///////////////////// HOOKS /////////////////////
+    ///////////////////// HOOKS - IMPLEMENTED BY INHERITING CONTRACTS /////////////////////
 
-    /// @notice function to check if a token exists on the token contract
+    /// @dev function to check if a token exists on the token contract
     function _tokenExists(uint256 tokenId) internal view virtual returns (bool);
 
-    /// @notice function to check ownership of a token
+    /// @dev function to check ownership of a token
     function _isTokenOwner(address potentialOwner, uint256 tokenId) internal view virtual returns (bool);
 
-    /// @notice function to check creatorship of a token
+    /// @dev function to check creatorship of a token
     function _isCreator(address potentialCreator, uint256 tokenId) internal view virtual returns (bool);
 
     ///////////////////// ERC-165 OVERRIDE /////////////////////
 
-    /// @dev see {ERC165.supportsInterface}
+    /// @dev see { ERC165.supportsInterface }
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
         return interfaceId == type(IStory).interfaceId || ERC165Upgradeable.supportsInterface(interfaceId);
     }

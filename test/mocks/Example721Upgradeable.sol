@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 
 import { ERC721Upgradeable } from "openzeppelin-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import { OwnableUpgradeable } from "openzeppelin-upgradeable/access/OwnableUpgradeable.sol";
-import { StoryContractUpgradeable } from "contracts/StoryContractUpgradeable.sol";
+import { StoryContractUpgradeable } from "src/upgradeable/StoryContractUpgradeable.sol";
 
 contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryContractUpgradeable {
 

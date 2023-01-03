@@ -21,19 +21,21 @@
 
 pragma solidity 0.8.17;
 
+///////////////////// CUSTOM ERRORS /////////////////////
+
+/// @dev story additions are not enabled
+error StoryNotEnabled();
+
+/// @dev token does not exist
+error TokenDoesNotExist();
+
+/// @dev caller is not the token owner
+error NotTokenOwner();
+
+/// @dev caller is not the token creator
+error NotTokenCreator();
+
 interface IStory {
-
-    /// @dev story additions are not enabled
-    error StoryNotEnabled();
-
-    /// @dev token does not exist
-    error TokenDoesNotExist();
-
-    /// @dev caller is not the token owner
-    error NotTokenOwner();
-
-    /// @dev caller is not the token creator
-    error NotTokenCreator();
 
     /// @notice event describing a creator story getting added to a token
     /// @dev this events stores creator stories on chain in the event log

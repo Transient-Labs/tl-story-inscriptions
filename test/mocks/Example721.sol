@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 
 import { ERC721 } from "openzeppelin/token/ERC721/ERC721.sol";
 import { Ownable } from "openzeppelin/access/Ownable.sol";
-import { StoryContract } from "contracts/StoryContract.sol";
+import { StoryContract } from "src/StoryContract.sol";
 
 contract Example721 is ERC721, StoryContract, Ownable {
 
