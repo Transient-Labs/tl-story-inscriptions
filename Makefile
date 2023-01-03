@@ -19,3 +19,7 @@ install:
 # Builds
 build:
 	forge clean && forge build --optimize --optimizer-runs 2000
+
+# Tests
+test-suite:
+	forge test --gas-report -vvv
