@@ -2,7 +2,7 @@
 
 /// @title Story Contract
 /// @author transientlabs.xyz
-/// @version 1.1.0
+/// @version 1.2.0
 
 /*
     ____        _ __    __   ____  _ ________                     __ 
