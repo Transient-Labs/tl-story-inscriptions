@@ -20,7 +20,7 @@ pragma solidity 0.8.17;
 
 import { Initializable } from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import { ERC165Upgradeable } from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "src/IStory.sol";
+import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "../IStory.sol";
 
 
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {

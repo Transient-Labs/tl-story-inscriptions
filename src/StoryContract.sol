@@ -19,7 +19,7 @@ pragma solidity 0.8.17;
 ///////////////////// IMPORTS /////////////////////
 
 import { ERC165 } from "openzeppelin/utils/introspection/ERC165.sol";
-import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "src/IStory.sol";
+import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "./IStory.sol";
 
 abstract contract StoryContract is IStory, ERC165 {
 

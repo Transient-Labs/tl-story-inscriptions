@@ -3,8 +3,8 @@
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
-import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "src/IStory.sol";
-import { Example721 } from "test/mocks/Example721.sol";
+import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "../src/IStory.sol";
+import { Example721 } from "./mocks/Example721.sol";
 
 contract StoryContractTest is Test {
     address[] public accounts;
