@@ -83,4 +83,9 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
         return interfaceId == type(IStory).interfaceId || ERC165Upgradeable.supportsInterface(interfaceId);
     }
+
+    ///////////////////// UPGRADEABILITY GAP /////////////////////
+
+    /// @dev gap variable - see https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+    uint256[50] private _gap;
 }
