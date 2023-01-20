@@ -3,9 +3,9 @@
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
-import { IStory } from "../src/IStory.sol";
-import { NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin } from "../src/upgradeable/StoryContractUpgradeable.sol";
-import { Example721Upgradeable } from "./mocks/Example721Upgradeable.sol";
+import {IStory} from "../src/IStory.sol";
+import {NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin} from "../src/IStory.sol";
+import {Example721Upgradeable} from "./mocks/Example721Upgradeable.sol";
 
 contract StoryContractUpgradeableTest is Test {
     address[] public accounts;
@@ -75,7 +75,7 @@ contract StoryContractUpgradeableTest is Test {
             contractNoStory.setStoryEnabled(true);
 
             vm.stopPrank();
-        }        
+        }
     }
 
     ///////////////////// ERC165 TESTS /////////////////////
@@ -100,7 +100,7 @@ contract StoryContractUpgradeableTest is Test {
         // revert for not being the token creator
         for (uint256 i = 0; i < 3; i++) {
             uint256 id = i + 1;
-            
+
             vm.prank(accounts[i], accounts[i]);
             vm.expectRevert(NotTokenCreator.selector);
             contractWithStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
@@ -131,7 +131,7 @@ contract StoryContractUpgradeableTest is Test {
         // revert for not being the token owner
         for (uint256 i = 0; i < 3; i++) {
             uint256 id = i + 1;
-            
+
             vm.expectRevert(NotTokenOwner.selector);
             contractWithStory.addStory(id, "NOT XCOPY", "I AM NOT XCOPY");
         }
@@ -163,7 +163,7 @@ contract StoryContractUpgradeableTest is Test {
         vm.expectRevert(StoryNotEnabled.selector);
         contractNoStory.addStory(4, "NOT XCOPY", "I AM NOT XCOPY");
     }
-    
+
     ///////////////////// TRANSFER AND WRITE STORY TESTS /////////////////////
 
     function testTransferAndAddCreatorStory() public {
