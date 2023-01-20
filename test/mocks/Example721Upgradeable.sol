@@ -23,6 +23,10 @@ contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryCo
         }
     }
 
+    function _isStoryAdmin(address potentialAdmin) internal view override(StoryContractUpgradeable) returns (bool) {
+        return owner() == potentialAdmin;
+    }
+
     function _tokenExists(uint256 tokenId) internal view override(StoryContractUpgradeable) returns (bool) {
         return _exists(tokenId);
     }

@@ -20,35 +20,72 @@ pragma solidity 0.8.17;
 
 import { Initializable } from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import { ERC165Upgradeable } from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "../IStory.sol";
+import { IStory } from "../IStory.sol";
 
+/*//////////////////////////////////////////////////////////////////////////
+                            Custom Errors
+//////////////////////////////////////////////////////////////////////////*/
+
+/// @dev story additions are not enabled
+error StoryNotEnabled();
+
+/// @dev token does not exist
+error TokenDoesNotExist();
+
+/// @dev caller is not the token owner
+error NotTokenOwner();
+
+/// @dev caller is not the token creator
+error NotTokenCreator();
+
+/// @dev caller is not a story admin
+error NotStoryAdmin();
+
+/*//////////////////////////////////////////////////////////////////////////
+                            Story Contract
+//////////////////////////////////////////////////////////////////////////*/
 
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
 
-    ///////////////////// STORAGE VARIABLES /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                State Variables
+    //////////////////////////////////////////////////////////////////////////*/
 
     bool public storyEnabled;
 
-    ///////////////////// MODIFIERS /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Modifiers
+    //////////////////////////////////////////////////////////////////////////*/
 
     modifier storyMustBeEnabled {
         if (!storyEnabled) { revert StoryNotEnabled(); }
         _;
     }
 
-    ///////////////////// INITIALIZER /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Initializer
+    //////////////////////////////////////////////////////////////////////////*/
 
-    /// @param enabled is a bool to enable or disable Story addition. This cannot be undone later.
+    /// @param enabled is a bool to enable or disable Story addition
     function __StoryContractUpgradeable_init(bool enabled) internal {
         __StoryContractUpgradeable_init_unchained(enabled);
     }
 
-    /// @param enabled is a bool to enable or disable Story addition. This cannot be undone later.
+    /// @param enabled is a bool to enable or disable Story addition
     function __StoryContractUpgradeable_init_unchained(bool enabled) internal {
         storyEnabled = enabled;
     }
 
-    ///////////////////// STORY FUNCTIONS /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Story Functions
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev function to set story enabled/disabled
+    /// @dev requires story admin
+    function setStoryEnabled(bool enabled) external {
+        if (!_isStoryAdmin(msg.sender)) { revert NotStoryAdmin(); }
+        storyEnabled = enabled;
+    }
 
     /// @dev see { IStory.addCreatorStory }
     function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external storyMustBeEnabled {
@@ -66,7 +103,12 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
         emit Story(tokenId, msg.sender, collectorName, story);
     }
 
-    ///////////////////// HOOKS - IMPLEMENTED BY INHERITING CONTRACTS /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Hooks
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev function to allow access to enabling/disabling story
+    function _isStoryAdmin(address potentialAdmin) internal view virtual returns (bool);
 
     /// @dev function to check if a token exists on the token contract
     function _tokenExists(uint256 tokenId) internal view virtual returns (bool);
@@ -77,14 +119,18 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     /// @dev function to check creatorship of a token
     function _isCreator(address potentialCreator, uint256 tokenId) internal view virtual returns (bool);
 
-    ///////////////////// ERC-165 OVERRIDE /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Overrides
+    //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev see { ERC165.supportsInterface }
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
         return interfaceId == type(IStory).interfaceId || ERC165Upgradeable.supportsInterface(interfaceId);
     }
 
-    ///////////////////// UPGRADEABILITY GAP /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Upgradeability Gap
+    //////////////////////////////////////////////////////////////////////////*/
 
     /// @dev gap variable - see https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
     uint256[50] private _gap;

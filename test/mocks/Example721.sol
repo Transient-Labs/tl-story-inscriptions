@@ -19,6 +19,10 @@ contract Example721 is ERC721, StoryContract, Ownable {
         }
     }
 
+    function _isStoryAdmin(address potentialAdmin) internal view override(StoryContract) returns (bool) {
+        return owner() == potentialAdmin;
+    }
+
     function _tokenExists(uint256 tokenId) internal view override(StoryContract) returns (bool) {
         return _exists(tokenId);
     }
