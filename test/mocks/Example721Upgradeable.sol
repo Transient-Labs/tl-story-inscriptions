@@ -2,12 +2,11 @@
 
 pragma solidity 0.8.17;
 
-import { ERC721Upgradeable } from "openzeppelin-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import { OwnableUpgradeable } from "openzeppelin-upgradeable/access/OwnableUpgradeable.sol";
-import { StoryContractUpgradeable } from "src/upgradeable/StoryContractUpgradeable.sol";
+import {ERC721Upgradeable} from "openzeppelin-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import {OwnableUpgradeable} from "openzeppelin-upgradeable/access/OwnableUpgradeable.sol";
+import {StoryContractUpgradeable} from "src/upgradeable/StoryContractUpgradeable.sol";
 
 contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryContractUpgradeable {
-
     uint256 private _counter;
 
     function initialize(bool enabled) external initializer {
@@ -23,20 +22,40 @@ contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryCo
         }
     }
 
-    function _tokenExists(uint256 tokenId) internal view override(StoryContractUpgradeable) returns (bool) {
+    function _isStoryAdmin(address potentialAdmin) internal view override (StoryContractUpgradeable) returns (bool) {
+        return owner() == potentialAdmin;
+    }
+
+    function _tokenExists(uint256 tokenId) internal view override (StoryContractUpgradeable) returns (bool) {
         return _exists(tokenId);
     }
 
-    function _isTokenOwner(address potentialOwner, uint256 tokenId) internal view override(StoryContractUpgradeable) returns (bool) {
+    function _isTokenOwner(address potentialOwner, uint256 tokenId)
+        internal
+        view
+        override (StoryContractUpgradeable)
+        returns (bool)
+    {
         return ownerOf(tokenId) == potentialOwner;
-    } 
+    }
 
-    function _isCreator(address potentialCreator, uint256 /* tokenId */) internal view override(StoryContractUpgradeable) returns (bool) {
+    function _isCreator(address potentialCreator, uint256 /* tokenId */ )
+        internal
+        view
+        override (StoryContractUpgradeable)
+        returns (bool)
+    {
         return owner() == potentialCreator;
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, StoryContractUpgradeable) returns (bool) {
-        return ERC721Upgradeable.supportsInterface(interfaceId) || StoryContractUpgradeable.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override (ERC721Upgradeable, StoryContractUpgradeable)
+        returns (bool)
+    {
+        return
+            ERC721Upgradeable.supportsInterface(interfaceId) || StoryContractUpgradeable.supportsInterface(interfaceId);
     }
-    
 }

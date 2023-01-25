@@ -3,77 +3,115 @@
 /// @title Story Contract
 /// @dev standalone, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// Version 2.0.0
+/// Version 2.3.0
 
 /*
     ____        _ __    __   ____  _ ________                     __ 
    / __ )__  __(_) /___/ /  / __ \(_) __/ __/__  ________  ____  / /_
   / __  / / / / / / __  /  / / / / / /_/ /_/ _ \/ ___/ _ \/ __ \/ __/
  / /_/ / /_/ / / / /_/ /  / /_/ / / __/ __/  __/ /  /  __/ / / / /__ 
-/_____/\__,_/_/_/\__,_/  /_____/_/_/ /_/  \___/_/   \___/_/ /_/\__(_)
-
-*/
+/_____/\__,_/_/_/\__,_/  /_____/_/_/ /_/  \___/_/   \___/_/ /_/\__(_)*/
 
 pragma solidity 0.8.17;
 
-///////////////////// IMPORTS /////////////////////
+/*//////////////////////////////////////////////////////////////////////////
+                            Imports
+//////////////////////////////////////////////////////////////////////////*/
 
-import { ERC165 } from "openzeppelin/utils/introspection/ERC165.sol";
-import { IStory, NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist } from "./IStory.sol";
+import {ERC165} from "openzeppelin/utils/introspection/ERC165.sol";
+import {IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotTokenCreator, NotStoryAdmin} from "./IStory.sol";
+
+/*//////////////////////////////////////////////////////////////////////////
+                            Story Contract
+//////////////////////////////////////////////////////////////////////////*/
 
 abstract contract StoryContract is IStory, ERC165 {
-
-    ///////////////////// STORAGE VARIABLES /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                State Variables
+    //////////////////////////////////////////////////////////////////////////*/
 
     bool public storyEnabled;
 
-    ///////////////////// MODIFIERS /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Modifiers
+    //////////////////////////////////////////////////////////////////////////*/
 
-    modifier storyMustBeEnabled {
-        if (!storyEnabled) { revert StoryNotEnabled(); }
+    modifier storyMustBeEnabled() {
+        if (!storyEnabled) revert StoryNotEnabled();
         _;
     }
 
-    ///////////////////// CONSTRUCTOR /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Constructor
+    //////////////////////////////////////////////////////////////////////////*/
 
-    /// @param enabled is a bool to enable or disable Story addition. This cannot be undone later.
+    /// @param enabled - a boolean to enable or disable Story additions
     constructor(bool enabled) {
         storyEnabled = enabled;
     }
 
-    ///////////////////// STORY FUNCTIONS /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Story Functions
+    //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev see { IStory.addCreatorStory }
-    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external storyMustBeEnabled {
-        if (!_tokenExists(tokenId)) { revert TokenDoesNotExist(); }
-        if (!_isCreator(msg.sender, tokenId)) { revert NotTokenCreator(); }
-        
+    /// @dev function to set story enabled/disabled
+    /// @dev requires story admin
+    /// @param enabled - a boolean setting to enable or disable Story additions
+    function setStoryEnabled(bool enabled) external {
+        if (!_isStoryAdmin(msg.sender)) revert NotStoryAdmin();
+        storyEnabled = enabled;
+    }
+
+    /// @inheritdoc IStory
+    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story)
+        external
+        storyMustBeEnabled
+    {
+        if (!_tokenExists(tokenId)) revert TokenDoesNotExist();
+        if (!_isCreator(msg.sender, tokenId)) revert NotTokenCreator();
+
         emit CreatorStory(tokenId, msg.sender, creatorName, story);
     }
 
-    /// @dev see { IStory.addStory }
-    function addStory(uint256 tokenId, string calldata collectorName, string calldata story) external storyMustBeEnabled {
-        if (!_tokenExists(tokenId)) { revert TokenDoesNotExist(); }
-        if (!_isTokenOwner(msg.sender, tokenId)) { revert NotTokenOwner(); }
+    /// @inheritdoc IStory
+    function addStory(uint256 tokenId, string calldata collectorName, string calldata story)
+        external
+        storyMustBeEnabled
+    {
+        if (!_tokenExists(tokenId)) revert TokenDoesNotExist();
+        if (!_isTokenOwner(msg.sender, tokenId)) revert NotTokenOwner();
 
         emit Story(tokenId, msg.sender, collectorName, story);
     }
 
-    ///////////////////// HOOKS - IMPLEMENTED BY INHERITING CONTRACTS /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Hooks
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev function to allow access to enabling/disabling story
+    /// @param potentialAdmin - the address to check for admin priviledges
+    function _isStoryAdmin(address potentialAdmin) internal view virtual returns (bool);
 
     /// @dev function to check if a token exists on the token contract
+    /// @param tokenId - the token id to check for existence
     function _tokenExists(uint256 tokenId) internal view virtual returns (bool);
 
     /// @dev function to check ownership of a token
+    /// @param potentialOwner - the address to check for ownership of `tokenId`
+    /// @param tokenId - the token id to check ownership against
     function _isTokenOwner(address potentialOwner, uint256 tokenId) internal view virtual returns (bool);
 
     /// @dev function to check creatorship of a token
+    /// @param potentialCreator - the address to check creatorship of `tokenId`
+    /// @param tokenId - the token id to check creatorship against
     function _isCreator(address potentialCreator, uint256 tokenId) internal view virtual returns (bool);
 
-    ///////////////////// ERC-165 OVERRIDE /////////////////////
+    /*//////////////////////////////////////////////////////////////////////////
+                                Overrides
+    //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev see { ERC165.supportsInterface }
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
+    /// @inheritdoc ERC165
+    function supportsInterface(bytes4 interfaceId) public view virtual override (ERC165) returns (bool) {
         return interfaceId == type(IStory).interfaceId || ERC165.supportsInterface(interfaceId);
     }
 }
