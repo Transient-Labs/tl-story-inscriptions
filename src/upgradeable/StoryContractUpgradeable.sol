@@ -1,18 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
+pragma solidity 0.8.19;
+
 /// @title Story Contract
 /// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// Version 2.3.0
-
-/*
-    ____        _ __    __   ____  _ ________                     __ 
-   / __ )__  __(_) /___/ /  / __ \(_) __/ __/__  ________  ____  / /_
-  / __  / / / / / / __  /  / / / / / /_/ /_/ _ \/ ___/ _ \/ __ \/ __/
- / /_/ / /_/ / / / /_/ /  / /_/ / / __/ __/  __/ /  /  __/ / / / /__ 
-/_____/\__,_/_/_/\__,_/  /_____/_/_/ /_/  \___/_/   \___/_/ /_/\__(_)*/
-
-pragma solidity 0.8.17;
+/// @custom:version 4.0.0
 
 /*//////////////////////////////////////////////////////////////////////////
                             Imports
