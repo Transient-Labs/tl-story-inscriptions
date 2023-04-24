@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-
-/// @title Story Contract
-/// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
-/// @author transientlabs.xyz
-/// Version 2.3.0
-
-/*
-    ____        _ __    __   ____  _ ________                     __ 
-   / __ )__  __(_) /___/ /  / __ \(_) __/ __/__  ________  ____  / /_
-  / __  / / / / / / __  /  / / / / / /_/ /_/ _ \/ ___/ _ \/ __ \/ __/
- / /_/ / /_/ / / / /_/ /  / /_/ / / __/ __/  __/ /  /  __/ / / / /__ 
-/_____/\__,_/_/_/\__,_/  /_____/_/_/ /_/  \___/_/   \___/_/ /_/\__(_)*/
-
-pragma solidity 0.8.17;
-
-/*//////////////////////////////////////////////////////////////////////////
-                            Imports
-//////////////////////////////////////////////////////////////////////////*/
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
 
 import {Initializable} from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import {ERC165Upgradeable} from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -28,6 +11,10 @@ import {
                             Story Contract
 //////////////////////////////////////////////////////////////////////////*/
 
+/// @title Story Contract
+/// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
+/// @author transientlabs.xyz
+/// @custom:version 3.0.0
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables
