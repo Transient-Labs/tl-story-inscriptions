@@ -3,3 +3,4 @@ __pycache__
 archive/
 out/
 cache/
+.DS_Store
