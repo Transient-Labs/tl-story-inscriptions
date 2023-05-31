@@ -13,13 +13,16 @@ remove:
 # Install the Modules
 install:
 	forge install foundry-rs/forge-std
-	forge install OpenZeppelin/openzeppelin-contracts@v4.8.0
-	forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v4.8.0
+	forge install OpenZeppelin/openzeppelin-contracts@v4.8.3
+	forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v4.8.3
+
+# Update the modules
+update: remove install
 
 # Builds
 build:
 	forge clean && forge build --optimize --optimizer-runs 2000
 
 # Tests
-test-suite:
+tests:
 	forge test --gas-report -vvv
