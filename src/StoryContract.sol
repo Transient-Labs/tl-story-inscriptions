@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.17;
 
 /*//////////////////////////////////////////////////////////////////////////
                             Imports
@@ -15,7 +15,7 @@ import {IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotTokenCreat
 /// @title Story Contract
 /// @dev standalone, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// @custom:version 3.0.0
+/// @custom:version 3.0.1
 abstract contract StoryContract is IStory, ERC165 {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables

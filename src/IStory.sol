@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.17;
 
 /*//////////////////////////////////////////////////////////////////////////
                             Custom Errors
@@ -26,7 +26,7 @@ error NotStoryAdmin();
 
 /// @title Story Contract Interface
 /// @author transientlabs.xyz
-/// @custom:version 3.0.0
+/// @custom:version 3.0.1
 interface IStory {
     /*//////////////////////////////////////////////////////////////////////////
                                 Events

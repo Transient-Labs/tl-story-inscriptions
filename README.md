@@ -28,6 +28,17 @@ The Story Contract supports ERC-165. The Interface ID is `0xd23ecb9`
 ## 5. Gas Cost
 Based on local testing, the gas cost of a 5000 word story (a research paper) costs `694795 gas`. At 100 gwei gas, this coverts to a gas cost of `0.0694795 ETH`. This is extrememly gas efficient. Stories will also likely be much shorter in length and submitted when gas is lower.
 
+## Testing
+You should run the test suite with `make test_suite`. 
+
+This loops through the following solidity versions:
+- 0.8.17
+- 0.8.18
+- 0.8.19
+- 0.8.20
+
+Any untested Solidity versions are NOT reccomended for use.
+
 ## Disclaimer
 This codebase is provided on an "as is" and "as available" basis.
 
