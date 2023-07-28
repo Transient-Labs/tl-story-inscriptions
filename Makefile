@@ -26,5 +26,6 @@ build:
 # Tests
 test_suite:
 	forge test --use 0.8.17
+	forge test --use 0.8.18
 	forge test --use 0.8.19
 	forge test --use 0.8.20
