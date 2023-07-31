@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.17;
 
 import {Initializable} from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import {ERC165Upgradeable} from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -14,7 +14,7 @@ import {
 /// @title Story Contract
 /// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// @custom:version 3.0.0
+/// @custom:version 4.0.1
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables

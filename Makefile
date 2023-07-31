@@ -24,5 +24,8 @@ build:
 	forge clean && forge build --optimize --optimizer-runs 2000
 
 # Tests
-tests:
-	forge test --gas-report -vvv
+test_suite:
+	forge test --use 0.8.17
+	forge test --use 0.8.18
+	forge test --use 0.8.19
+	forge test --use 0.8.20
