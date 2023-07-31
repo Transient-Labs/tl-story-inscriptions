@@ -26,7 +26,7 @@ error NotStoryAdmin();
 
 /// @title Story Contract Interface
 /// @author transientlabs.xyz
-/// @custom:version 4.0.1
+/// @custom:version 4.0.2
 interface IStory {
     /*//////////////////////////////////////////////////////////////////////////
                                 Events

@@ -14,7 +14,7 @@ import {
 /// @title Story Contract
 /// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// @custom:version 4.0.1
+/// @custom:version 4.0.2
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables
