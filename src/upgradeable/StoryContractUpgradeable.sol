@@ -56,7 +56,7 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     }
 
     /// @inheritdoc IStory
-    function addCollectionStory(string calldata creatorName, string calldata story) external storyMustBeEnabled {
+    function addCollectionStory(string calldata creatorName, string calldata story) external {
         if (!_isCreator(msg.sender)) revert NotCreator();
 
         emit CollectionStory(msg.sender, creatorName, story);
@@ -65,7 +65,6 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     /// @inheritdoc IStory
     function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story)
         external
-        storyMustBeEnabled
     {
         if (!_tokenExists(tokenId)) revert TokenDoesNotExist();
         if (!_isCreator(msg.sender, tokenId)) revert NotCreator();

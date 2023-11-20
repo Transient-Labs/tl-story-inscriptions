@@ -151,15 +151,17 @@ contract StoryContractTest is Test {
     ///////////////////// STORY DISABLED TESTS /////////////////////
 
     function testExpectRevertDisabledAddCollectionStory() public {
-        vm.expectRevert(StoryNotEnabled.selector);
-        contractNoStory.addCollectionStory("XCOPY", "I AM XCOPY");
+        vm.expectEmit(true, false, false, true, address(contractWithStory));
+        emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
+        contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
     }
 
     function testExpectRevertDisabledAddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {
             uint256 id = i + 1;
-            vm.expectRevert(StoryNotEnabled.selector);
-            contractNoStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
+            vm.expectEmit(true, true, false, true, address(contractWithStory));
+            emit CreatorStory(id, address(this), "XCOPY", "I AM XCOPY");
+            contractWithStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
         }
     }
 
@@ -189,7 +191,8 @@ contract StoryContractTest is Test {
         // contract no story
         vm.prank(accounts[0], accounts[0]);
         contractNoStory.transferFrom(accounts[0], accounts[1], 1);
-        vm.expectRevert(StoryNotEnabled.selector);
+        vm.expectEmit(true, true, false, true, address(contractNoStory));
+        emit CreatorStory(1, address(this), "XCOPY", "I AM XCOPY");
         contractNoStory.addCreatorStory(1, "XCOPY", "I AM XCOPY");
     }
 
