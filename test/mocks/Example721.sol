@@ -34,6 +34,15 @@ contract Example721 is ERC721, StoryContract, Ownable {
         return ownerOf(tokenId) == potentialOwner;
     }
 
+    function _isCreator(address potentialCreator)
+        internal
+        view
+        override (StoryContract)
+        returns (bool)
+    {
+        return owner() == potentialCreator;
+    }
+
     function _isCreator(address potentialCreator, uint256 /* tokenId */ )
         internal
         view

@@ -38,6 +38,15 @@ contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryCo
         return ownerOf(tokenId) == potentialOwner;
     }
 
+    function _isCreator(address potentialCreator)
+        internal
+        view
+        override (StoryContractUpgradeable)
+        returns (bool)
+    {
+        return owner() == potentialCreator;
+    }
+
     function _isCreator(address potentialCreator, uint256 /* tokenId */ )
         internal
         view

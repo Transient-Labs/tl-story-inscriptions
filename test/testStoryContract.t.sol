@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
 import {IStory} from "../src/IStory.sol";
-import {NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin} from "../src/IStory.sol";
+import {NotCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin} from "../src/IStory.sol";
 import {Example721} from "./mocks/Example721.sol";
 
 contract StoryContractTest is Test {
@@ -11,6 +11,7 @@ contract StoryContractTest is Test {
     Example721 public contractWithStory;
     Example721 public contractNoStory;
 
+    event CollectionStory(address indexed creatorAddress, string creatorName, string story);
     event CreatorStory(uint256 indexed tokenId, address indexed creatorAddress, string creatorName, string story);
     event Story(uint256 indexed tokenId, address indexed collectorAddress, string collectorName, string story);
 
@@ -76,6 +77,21 @@ contract StoryContractTest is Test {
 
     ///////////////////// STORY ENABLED TESTS /////////////////////
 
+    function testAddCollectionStory() public {
+        vm.expectEmit(true, false, false, true, address(contractWithStory));
+            emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
+            contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
+    }
+
+    function testExpectRevertAddCollectionStory() public {
+        // revert for not being the token creator
+        for (uint256 i = 0; i < 3; i++) {
+            vm.prank(accounts[i], accounts[i]);
+            vm.expectRevert(NotCreator.selector);
+            contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
+        }
+    }
+
     function testAddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {
             uint256 id = i + 1;
@@ -91,7 +107,7 @@ contract StoryContractTest is Test {
             uint256 id = i + 1;
 
             vm.prank(accounts[i], accounts[i]);
-            vm.expectRevert(NotTokenCreator.selector);
+            vm.expectRevert(NotCreator.selector);
             contractWithStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
         }
 
@@ -131,6 +147,11 @@ contract StoryContractTest is Test {
     }
 
     ///////////////////// STORY DISABLED TESTS /////////////////////
+
+    function testExpectRevertDisabledAddCollectionStory() public {
+        vm.expectRevert(StoryNotEnabled.selector);
+        contractNoStory.addCollectionStory("XCOPY", "I AM XCOPY");
+    }
 
     function testExpectRevertDisabledAddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {

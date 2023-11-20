@@ -29,3 +29,6 @@ test_suite:
 	forge test --use 0.8.18
 	forge test --use 0.8.19
 	forge test --use 0.8.20
+
+fuzz_test:
+	forge test --fuzz-runs 10000
