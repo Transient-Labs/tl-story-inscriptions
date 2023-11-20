@@ -1,5 +1,5 @@
-# Transient Labs Story Contract
-Developed in collaboration with Michelle Viljoen, the Transient Labs Story Contract enables new ways for artists and collectors to experience and add to their art, while creating news ways for all to experience and discover art. This is Social Art, not social media.
+# Transient Labs Story Inscriptions
+Developed in collaboration with Michelle Viljoen, Story Inscriptions enable new ways for artists and collectors to experience and add to their art, while creating news ways for all to experience and discover art. This is Social Art, not social media.
 
 ## 1. Problem Statement
 Art has so much more to it than just the piece of art itself. There is the story of the artist, the inspiration behind the piece of art, and the story from each collector of the piece.
@@ -22,10 +22,30 @@ This contract allows both the artist and collector(s) can write their stories to
 
 Transient Labs plans to provide a new experience where people can explore stories, in general or for a specific piece of art. We are also working with marketplaces to get this integrated.
 
-## 4. ERC-165 Support
+## 4. Story Inscription Format
+Story Inscriptions are markdown text blobs, supporting both portions of Markdown: Frontmatter and Content.
+
+### Frontmatter
+Frontmatter is a JSON blob, with curly braces starting and ending on their own lines (as shown below). Any structured data can be put in here. Transient Labs uses namespacing for specific products, such as T.R.A.C.E.
+
+JSON was chosen as it is the most secure and easiest to serialize across web frameworks. YAML is not secure enough in our opinion and TOML is harder to work with. There is no standard way to specify JSON Frontmatter, however, the method chosen here is widely supported across programming languages (Javascript, Python, Go).
+
+### Content
+Content is markdown text that should be parsed and escaped to avoid XSS and other attack vectors. This guide shows what is accepted as Markdown syntax: https://www.markdownguide.org/basic-syntax/
+
+Example
+```markdown
+{
+  "data": "some json data in Frontmatter"
+}
+# Markdown Content starts here!
+You can write whatever you want down here!
+```
+
+## 5. ERC-165 Support
 The Story Contract supports ERC-165. The Interface ID is `0x0d23ecb9`
 
-## 5. Gas Cost
+## 6. Gas Cost
 Based on local testing, the gas cost of a 5000 word story (a research paper) costs `694795 gas`. At 100 gwei gas, this coverts to a gas cost of `0.0694795 ETH`. This is extrememly gas efficient. Stories will also likely be much shorter in length and submitted when gas is lower.
 
 ## Testing
