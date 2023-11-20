@@ -3,9 +3,7 @@ pragma solidity ^0.8.17;
 
 import {Initializable} from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import {ERC165Upgradeable} from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import {
-    IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotCreator, NotStoryAdmin
-} from "../IStory.sol";
+import {IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotCreator, NotStoryAdmin} from "../IStory.sol";
 
 /*//////////////////////////////////////////////////////////////////////////
                             Story Contract
@@ -117,8 +115,9 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ERC165Upgradeable
-    function supportsInterface(bytes4 interfaceId) public view virtual override (ERC165Upgradeable) returns (bool) {
-        return interfaceId == type(IStory).interfaceId || ERC165Upgradeable.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
+        return interfaceId == type(IStory).interfaceId || interfaceId == 0x0d23ecb9 // support interface id for previous IStory interface, since this technically implements it
+            || ERC165Upgradeable.supportsInterface(interfaceId);
     }
 
     /*//////////////////////////////////////////////////////////////////////////

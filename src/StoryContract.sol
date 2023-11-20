@@ -113,7 +113,8 @@ abstract contract StoryContract is IStory, ERC165 {
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ERC165
-    function supportsInterface(bytes4 interfaceId) public view virtual override (ERC165) returns (bool) {
-        return interfaceId == type(IStory).interfaceId || ERC165.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
+        return interfaceId == type(IStory).interfaceId || interfaceId == 0x0d23ecb9 // support interface id for previous IStory interface, since this technically implements it
+            || ERC165.supportsInterface(interfaceId);
     }
 }

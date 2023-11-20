@@ -72,15 +72,17 @@ contract StoryContractTest is Test {
 
     function testERC165() public {
         assertTrue(contractWithStory.supportsInterface(type(IStory).interfaceId));
+        assertTrue(contractWithStory.supportsInterface(0x0d23ecb9)); // previous IStory interfaceId
         assertTrue(contractNoStory.supportsInterface(type(IStory).interfaceId));
+        assertTrue(contractNoStory.supportsInterface(0x0d23ecb9)); // previous IStory interfaceId
     }
 
     ///////////////////// STORY ENABLED TESTS /////////////////////
 
     function testAddCollectionStory() public {
         vm.expectEmit(true, false, false, true, address(contractWithStory));
-            emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
-            contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
+        emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
+        contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
     }
 
     function testExpectRevertAddCollectionStory() public {

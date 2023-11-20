@@ -17,48 +17,37 @@ contract Example721 is ERC721, StoryContract, Ownable {
         }
     }
 
-    function _isStoryAdmin(address potentialAdmin) internal view override (StoryContract) returns (bool) {
+    function _isStoryAdmin(address potentialAdmin) internal view override(StoryContract) returns (bool) {
         return owner() == potentialAdmin;
     }
 
-    function _tokenExists(uint256 tokenId) internal view override (StoryContract) returns (bool) {
+    function _tokenExists(uint256 tokenId) internal view override(StoryContract) returns (bool) {
         return _exists(tokenId);
     }
 
     function _isTokenOwner(address potentialOwner, uint256 tokenId)
         internal
         view
-        override (StoryContract)
+        override(StoryContract)
         returns (bool)
     {
         return ownerOf(tokenId) == potentialOwner;
     }
 
-    function _isCreator(address potentialCreator)
-        internal
-        view
-        override (StoryContract)
-        returns (bool)
-    {
+    function _isCreator(address potentialCreator) internal view override(StoryContract) returns (bool) {
         return owner() == potentialCreator;
     }
 
     function _isCreator(address potentialCreator, uint256 /* tokenId */ )
         internal
         view
-        override (StoryContract)
+        override(StoryContract)
         returns (bool)
     {
         return owner() == potentialCreator;
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override (ERC721, StoryContract)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, StoryContract) returns (bool) {
         return ERC721.supportsInterface(interfaceId) || StoryContract.supportsInterface(interfaceId);
     }
 }
