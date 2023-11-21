@@ -26,6 +26,7 @@ error NotStoryAdmin();
 
 /// @title Story Contract Interface
 /// @dev interface id: 0x2464f17b
+/// @dev previous interface id that is still supported: 0x0d23ecb9
 /// @author transientlabs.xyz
 /// @custom:version 5.0.0
 interface IStory {
