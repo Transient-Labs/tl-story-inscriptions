@@ -43,7 +43,7 @@ You can write whatever you want down here!
 ```
 
 ## 5. ERC-165 Support
-The Story Contract supports ERC-165. The Interface ID is `0x2464f17b`
+The Story Contract supports ERC-165. The Interface ID is `0x2464f17b`. The previous interface id that is supported in versions lower than 5.0.0 is `0x0d23ecb9`.
 
 ## 6. Gas Cost
 Based on local testing, the gas cost of a 5000 word story (a research paper) costs `694795 gas`. At 100 gwei gas, this coverts to a gas cost of `0.0694795 ETH`. This is extrememly gas efficient. Stories will also likely be much shorter in length and submitted when gas is lower.
