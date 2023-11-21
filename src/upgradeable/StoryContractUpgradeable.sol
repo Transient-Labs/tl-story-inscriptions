@@ -3,9 +3,7 @@ pragma solidity ^0.8.17;
 
 import {Initializable} from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
 import {ERC165Upgradeable} from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import {
-    IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotTokenCreator, NotStoryAdmin
-} from "../IStory.sol";
+import {IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotCreator, NotStoryAdmin} from "../IStory.sol";
 
 /*//////////////////////////////////////////////////////////////////////////
                             Story Contract
@@ -14,7 +12,7 @@ import {
 /// @title Story Contract
 /// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// @custom:version 4.0.2
+/// @custom:version 5.0.0
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables
@@ -58,12 +56,18 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     }
 
     /// @inheritdoc IStory
+    function addCollectionStory(string calldata creatorName, string calldata story) external {
+        if (!_isCreator(msg.sender)) revert NotCreator();
+
+        emit CollectionStory(msg.sender, creatorName, story);
+    }
+
+    /// @inheritdoc IStory
     function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story)
         external
-        storyMustBeEnabled
     {
         if (!_tokenExists(tokenId)) revert TokenDoesNotExist();
-        if (!_isCreator(msg.sender, tokenId)) revert NotTokenCreator();
+        if (!_isCreator(msg.sender, tokenId)) revert NotCreator();
 
         emit CreatorStory(tokenId, msg.sender, creatorName, story);
     }
@@ -96,6 +100,10 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     /// @param tokenId - the token id to check ownership against
     function _isTokenOwner(address potentialOwner, uint256 tokenId) internal view virtual returns (bool);
 
+    /// @dev function to check creatorship of the collection
+    /// @param potentialCreator - the address to check creatorship of the collection
+    function _isCreator(address potentialCreator) internal view virtual returns (bool);
+
     /// @dev function to check creatorship of a token
     /// @param potentialCreator - the address to check creatorship of `tokenId`
     /// @param tokenId - the token id to check creatorship against
@@ -106,8 +114,9 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ERC165Upgradeable
-    function supportsInterface(bytes4 interfaceId) public view virtual override (ERC165Upgradeable) returns (bool) {
-        return interfaceId == type(IStory).interfaceId || ERC165Upgradeable.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
+        return interfaceId == type(IStory).interfaceId || interfaceId == 0x0d23ecb9 // support interface id for previous IStory interface, since this technically implements it
+            || ERC165Upgradeable.supportsInterface(interfaceId);
     }
 
     /*//////////////////////////////////////////////////////////////////////////

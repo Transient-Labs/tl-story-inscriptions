@@ -21,27 +21,31 @@ contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryCo
         }
     }
 
-    function _isStoryAdmin(address potentialAdmin) internal view override (StoryContractUpgradeable) returns (bool) {
+    function _isStoryAdmin(address potentialAdmin) internal view override(StoryContractUpgradeable) returns (bool) {
         return owner() == potentialAdmin;
     }
 
-    function _tokenExists(uint256 tokenId) internal view override (StoryContractUpgradeable) returns (bool) {
+    function _tokenExists(uint256 tokenId) internal view override(StoryContractUpgradeable) returns (bool) {
         return _exists(tokenId);
     }
 
     function _isTokenOwner(address potentialOwner, uint256 tokenId)
         internal
         view
-        override (StoryContractUpgradeable)
+        override(StoryContractUpgradeable)
         returns (bool)
     {
         return ownerOf(tokenId) == potentialOwner;
     }
 
+    function _isCreator(address potentialCreator) internal view override(StoryContractUpgradeable) returns (bool) {
+        return owner() == potentialCreator;
+    }
+
     function _isCreator(address potentialCreator, uint256 /* tokenId */ )
         internal
         view
-        override (StoryContractUpgradeable)
+        override(StoryContractUpgradeable)
         returns (bool)
     {
         return owner() == potentialCreator;
@@ -51,7 +55,7 @@ contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryCo
         public
         view
         virtual
-        override (ERC721Upgradeable, StoryContractUpgradeable)
+        override(ERC721Upgradeable, StoryContractUpgradeable)
         returns (bool)
     {
         return

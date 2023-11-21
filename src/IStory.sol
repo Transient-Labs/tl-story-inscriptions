@@ -14,8 +14,8 @@ error TokenDoesNotExist();
 /// @dev caller is not the token owner
 error NotTokenOwner();
 
-/// @dev caller is not the token creator
-error NotTokenCreator();
+/// @dev caller is not the creator
+error NotCreator();
 
 /// @dev caller is not a story admin
 error NotStoryAdmin();
@@ -25,12 +25,20 @@ error NotStoryAdmin();
 //////////////////////////////////////////////////////////////////////////*/
 
 /// @title Story Contract Interface
+/// @dev interface id: 0x2464f17b
 /// @author transientlabs.xyz
-/// @custom:version 4.0.2
+/// @custom:version 5.0.0
 interface IStory {
     /*//////////////////////////////////////////////////////////////////////////
                                 Events
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice event describing a collection story getting added to a contract
+    /// @dev this event stories creator stories on chain in the event log that apply to an entire collection
+    /// @param creatorAddress - the address of the creator of the collection
+    /// @param creatorName - string representation of the creator's name
+    /// @param story - the story written and attached to the collection
+    event CollectionStory(address indexed creatorAddress, string creatorName, string story);
 
     /// @notice event describing a creator story getting added to a token
     /// @dev this events stores creator stories on chain in the event log
@@ -51,6 +59,15 @@ interface IStory {
     /*//////////////////////////////////////////////////////////////////////////
                                 Story Functions
     //////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice function to let the creator add a story to the collection they have created
+    /// @dev depending on the implementation, this function may be restricted in various ways, such as
+    ///      limiting the number of times the creator may write a story.
+    /// @dev this function MUST emit the CollectionStory event each time it is called
+    /// @dev this function MUST implement logic to restrict access to only the creator
+    /// @param creatorName - string representation of the creator's name
+    /// @param story - the story written and attached to the token id
+    function addCollectionStory(string calldata creatorName, string calldata story) external;
 
     /// @notice function to let the creator add a story to any token they have created
     /// @dev depending on the implementation, this function may be restricted in various ways, such as

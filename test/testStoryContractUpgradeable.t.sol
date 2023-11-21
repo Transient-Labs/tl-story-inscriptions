@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
 import {IStory} from "../src/IStory.sol";
-import {NotTokenCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin} from "../src/IStory.sol";
+import {NotCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin} from "../src/IStory.sol";
 import {Example721Upgradeable} from "./mocks/Example721Upgradeable.sol";
 
 contract StoryContractUpgradeableTest is Test {
@@ -11,6 +11,7 @@ contract StoryContractUpgradeableTest is Test {
     Example721Upgradeable public contractWithStory;
     Example721Upgradeable public contractNoStory;
 
+    event CollectionStory(address indexed creatorAddress, string creatorName, string story);
     event CreatorStory(uint256 indexed tokenId, address indexed creatorAddress, string creatorName, string story);
     event Story(uint256 indexed tokenId, address indexed collectorAddress, string collectorName, string story);
 
@@ -81,10 +82,27 @@ contract StoryContractUpgradeableTest is Test {
 
     function testERC165() public {
         assertTrue(contractWithStory.supportsInterface(type(IStory).interfaceId));
+        assertTrue(contractWithStory.supportsInterface(0x0d23ecb9)); // previous IStory interfaceId
         assertTrue(contractNoStory.supportsInterface(type(IStory).interfaceId));
+        assertTrue(contractNoStory.supportsInterface(0x0d23ecb9)); // previous IStory interfaceId
     }
 
     ///////////////////// STORY ENABLED TESTS /////////////////////
+
+    function testAddCollectionStory() public {
+        vm.expectEmit(true, false, false, true, address(contractWithStory));
+        emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
+        contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
+    }
+
+    function testExpectRevertAddCollectionStory() public {
+        // revert for not being the token creator
+        for (uint256 i = 0; i < 3; i++) {
+            vm.prank(accounts[i], accounts[i]);
+            vm.expectRevert(NotCreator.selector);
+            contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
+        }
+    }
 
     function testAddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {
@@ -101,7 +119,7 @@ contract StoryContractUpgradeableTest is Test {
             uint256 id = i + 1;
 
             vm.prank(accounts[i], accounts[i]);
-            vm.expectRevert(NotTokenCreator.selector);
+            vm.expectRevert(NotCreator.selector);
             contractWithStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
         }
 
@@ -142,11 +160,18 @@ contract StoryContractUpgradeableTest is Test {
 
     ///////////////////// STORY DISABLED TESTS /////////////////////
 
+    function testExpectRevertDisabledAddCollectionStory() public {
+        vm.expectEmit(true, false, false, true, address(contractWithStory));
+        emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
+        contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
+    }
+
     function testExpectRevertDisabledAddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {
             uint256 id = i + 1;
-            vm.expectRevert(StoryNotEnabled.selector);
-            contractNoStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
+            vm.expectEmit(true, true, false, true, address(contractWithStory));
+            emit CreatorStory(id, address(this), "XCOPY", "I AM XCOPY");
+            contractWithStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
         }
     }
 
@@ -176,7 +201,8 @@ contract StoryContractUpgradeableTest is Test {
         // contract no story
         vm.prank(accounts[0], accounts[0]);
         contractNoStory.transferFrom(accounts[0], accounts[1], 1);
-        vm.expectRevert(StoryNotEnabled.selector);
+        vm.expectEmit(true, true, false, true, address(contractNoStory));
+        emit CreatorStory(1, address(this), "XCOPY", "I AM XCOPY");
         contractNoStory.addCreatorStory(1, "XCOPY", "I AM XCOPY");
     }
 
