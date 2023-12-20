@@ -29,5 +29,5 @@ compiler_test:
 	forge test --use 0.8.21
 	forge test --use 0.8.22
 
-fuzz_test:
-	forge test --fuzz-runs 10000
+gas_test:
+	forge test --fuzz-runs 10000 --gas-report

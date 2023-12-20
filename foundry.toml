@@ -14,7 +14,7 @@ optimizer = true                                              # enable or disabl
 optimizer_runs = 2000                                         # the number of optimizer runs
 verbosity = 3                                                 # the verbosity of tests
 ffi = false                                                   # whether to enable ffi or not
-gas_reports = ["*"]   
+gas_reports = ["Example721"]   
 fs_permissions = [{ access = 'read', path = './test/file_utils'}] 
 
 [fuzz]
