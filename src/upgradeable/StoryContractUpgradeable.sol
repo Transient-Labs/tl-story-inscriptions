@@ -1,31 +1,62 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
-import {Initializable} from "openzeppelin-upgradeable/proxy/utils/Initializable.sol";
-import {ERC165Upgradeable} from "openzeppelin-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import {IStory, StoryNotEnabled, TokenDoesNotExist, NotTokenOwner, NotCreator, NotStoryAdmin} from "../IStory.sol";
-
-/*//////////////////////////////////////////////////////////////////////////
-                            Story Contract
-//////////////////////////////////////////////////////////////////////////*/
+import {Initializable} from "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol";
+import {ERC165Upgradeable} from
+    "lib/openzeppelin-contracts-upgradeable/contracts/utils/introspection/ERC165Upgradeable.sol";
+import {IStory} from "src/IStory.sol";
 
 /// @title Story Contract
-/// @dev upgradeable, inheritable abstract contract implementing the Story Contract interface
+/// @dev Upgradeable, inheritable abstract contract implementing the Story Contract interface
 /// @author transientlabs.xyz
-/// @custom:version 5.0.0
+/// @custom:version 6.0.0
 abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////
-                                State Variables
+                                    Storage
     //////////////////////////////////////////////////////////////////////////*/
 
-    bool public storyEnabled;
+    /// @custom:storage-location erc7201:transientlabs.storage.StoryContract
+    struct StoryContractStorage {
+        bool storyEnabled;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("transientlabs.storage.StoryContract")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant StoryContractStorageLocation =
+        0x476a5df056619be505605dfc1f43794cb59f969177cd944c1aa0f27eb23dbf00;
+
+    /// @dev private function to get storage location with ERC-2701 namespaced storage
+    function _getStoryContractStorage() private pure returns (StoryContractStorage storage $) {
+        assembly {
+            $.slot := StoryContractStorageLocation
+        }
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                Errors
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @dev Story additions are not enabled
+    error StoryNotEnabled();
+
+    /// @dev Token does not exist
+    error TokenDoesNotExist();
+
+    /// @dev Caller is not the token owner
+    error NotTokenOwner();
+
+    /// @dev Caller is not the creator
+    error NotCreator();
+
+    /// @dev Caller is not a story admin
+    error NotStoryAdmin();
 
     /*//////////////////////////////////////////////////////////////////////////
                                 Modifiers
     //////////////////////////////////////////////////////////////////////////*/
 
     modifier storyMustBeEnabled() {
-        if (!storyEnabled) revert StoryNotEnabled();
+        StoryContractStorage storage $ = _getStoryContractStorage();
+        if (!$.storyEnabled) revert StoryNotEnabled();
         _;
     }
 
@@ -33,26 +64,34 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
                                 Initializer
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @param enabled - a bool to enable or disable Story addition
-    function __StoryContractUpgradeable_init(bool enabled) internal {
-        __StoryContractUpgradeable_init_unchained(enabled);
+    /// @param enabled A bool to enable or disable Story addition
+    function __StoryContract_init(bool enabled) internal {
+        __StoryContract_init_unchained(enabled);
     }
 
-    /// @param enabled - a bool to enable or disable Story addition
-    function __StoryContractUpgradeable_init_unchained(bool enabled) internal {
-        storyEnabled = enabled;
+    /// @param enabled A bool to enable or disable Story addition
+    function __StoryContract_init_unchained(bool enabled) internal {
+        StoryContractStorage storage $ = _getStoryContractStorage();
+        $.storyEnabled = enabled;
     }
 
     /*//////////////////////////////////////////////////////////////////////////
                                 Story Functions
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev function to set story enabled/disabled
-    /// @dev requires story admin
-    /// @param enabled - a boolean setting to enable or disable Story additions
+    /// @notice Function to see if story is enabled/disabled
+    function storyEnabled() external view returns (bool) {
+        StoryContractStorage storage $ = _getStoryContractStorage();
+        return $.storyEnabled;
+    }
+
+    /// @notice Function to set story enabled/disabled
+    /// @dev Requires story admin
+    /// @param enabled A boolean setting to enable or disable Story additions
     function setStoryEnabled(bool enabled) external {
         if (!_isStoryAdmin(msg.sender)) revert NotStoryAdmin();
-        storyEnabled = enabled;
+        StoryContractStorage storage $ = _getStoryContractStorage();
+        $.storyEnabled = enabled;
     }
 
     /// @inheritdoc IStory
@@ -63,9 +102,7 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
     }
 
     /// @inheritdoc IStory
-    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story)
-        external
-    {
+    function addCreatorStory(uint256 tokenId, string calldata creatorName, string calldata story) external {
         if (!_tokenExists(tokenId)) revert TokenDoesNotExist();
         if (!_isCreator(msg.sender, tokenId)) revert NotCreator();
 
@@ -87,26 +124,26 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
                                 Hooks
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @dev function to allow access to enabling/disabling story
-    /// @param potentialAdmin - the address to check for admin priviledges
+    /// @dev Function to allow access to enabling/disabling story
+    /// @param potentialAdmin The address to check for admin priviledges
     function _isStoryAdmin(address potentialAdmin) internal view virtual returns (bool);
 
-    /// @dev function to check if a token exists on the token contract
-    /// @param tokenId - the token id to check for existence
+    /// @dev Function to check if a token exists on the token contract
+    /// @param tokenId The token id to check for existence
     function _tokenExists(uint256 tokenId) internal view virtual returns (bool);
 
-    /// @dev function to check ownership of a token
-    /// @param potentialOwner - the address to check for ownership of `tokenId`
-    /// @param tokenId - the token id to check ownership against
+    /// @dev Function to check ownership of a token
+    /// @param potentialOwner The address to check for ownership of `tokenId`
+    /// @param tokenId The token id to check ownership against
     function _isTokenOwner(address potentialOwner, uint256 tokenId) internal view virtual returns (bool);
 
-    /// @dev function to check creatorship of the collection
-    /// @param potentialCreator - the address to check creatorship of the collection
+    /// @dev Function to check creatorship of the collection
+    /// @param potentialCreator The address to check creatorship of the collection
     function _isCreator(address potentialCreator) internal view virtual returns (bool);
 
-    /// @dev function to check creatorship of a token
-    /// @param potentialCreator - the address to check creatorship of `tokenId`
-    /// @param tokenId - the token id to check creatorship against
+    /// @dev Function to check creatorship of a token
+    /// @param potentialCreator The address to check creatorship of `tokenId`
+    /// @param tokenId The token id to check creatorship against
     function _isCreator(address potentialCreator, uint256 tokenId) internal view virtual returns (bool);
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -118,11 +155,4 @@ abstract contract StoryContractUpgradeable is Initializable, IStory, ERC165Upgra
         return interfaceId == type(IStory).interfaceId || interfaceId == 0x0d23ecb9 // support interface id for previous IStory interface, since this technically implements it
             || ERC165Upgradeable.supportsInterface(interfaceId);
     }
-
-    /*//////////////////////////////////////////////////////////////////////////
-                                Upgradeability Gap
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @dev gap variable - see https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
-    uint256[50] private _gap;
 }

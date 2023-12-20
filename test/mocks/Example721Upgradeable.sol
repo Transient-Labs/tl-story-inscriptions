@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
-import {ERC721Upgradeable} from "openzeppelin-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import {OwnableUpgradeable} from "openzeppelin-upgradeable/access/OwnableUpgradeable.sol";
+import {ERC721Upgradeable} from "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/ERC721Upgradeable.sol";
+import {OwnableUpgradeable} from "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import {StoryContractUpgradeable} from "src/upgradeable/StoryContractUpgradeable.sol";
 
 contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryContractUpgradeable {
@@ -10,8 +10,12 @@ contract Example721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, StoryCo
 
     function initialize(bool enabled) external initializer {
         __ERC721_init("TEST", "TST");
-        __Ownable_init();
-        __StoryContractUpgradeable_init(enabled);
+        __Ownable_init(msg.sender);
+        __StoryContract_init(enabled);
+    }
+
+    function _exists(uint256 tokenId) private view returns (bool) {
+        return _ownerOf(tokenId) != address(0);
     }
 
     function mint(uint256 numToMint) external onlyOwner {

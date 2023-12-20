@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
-import {ERC721} from "openzeppelin/token/ERC721/ERC721.sol";
-import {Ownable} from "openzeppelin/access/Ownable.sol";
+import {ERC721} from "lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
+import {Ownable} from "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 import {StoryContract} from "src/StoryContract.sol";
 
 contract Example721 is ERC721, StoryContract, Ownable {
     uint256 private _counter;
 
-    constructor(bool enabled) ERC721("Test", "TST") StoryContract(enabled) Ownable() {}
+    constructor(bool enabled) ERC721("Test", "TST") StoryContract(enabled) Ownable(msg.sender) {}
+
+    function _exists(uint256 tokenId) private view returns (bool) {
+        return _ownerOf(tokenId) != address(0);
+    }
 
     function mint(uint256 numToMint) external onlyOwner {
         for (uint256 i = 0; i < numToMint; i++) {

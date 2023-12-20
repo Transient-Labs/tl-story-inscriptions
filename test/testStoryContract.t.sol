@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
-import {IStory} from "../src/IStory.sol";
-import {NotCreator, NotTokenOwner, StoryNotEnabled, TokenDoesNotExist, NotStoryAdmin} from "../src/IStory.sol";
-import {Example721} from "./mocks/Example721.sol";
+import {IStory} from "src/IStory.sol";
+import {StoryContract} from "src/StoryContract.sol";
+import {Example721} from "test/mocks/Example721.sol";
 
 contract StoryContractTest is Test {
     address[] public accounts;
@@ -33,68 +33,60 @@ contract StoryContractTest is Test {
         contractNoStory.transferFrom(address(this), accounts[2], 3);
     }
 
-    ///////////////////// INITIALIZATION TESTS /////////////////////
-
-    function testStoryEnabledOrDisabled() public {
+    function test_StoryEnabledOrDisabled() public {
         assertTrue(contractWithStory.storyEnabled());
         assertFalse(contractNoStory.storyEnabled());
     }
 
-    function testOwnership() public {
+    function test_Ownership() public {
         assertEq(contractWithStory.owner(), address(this));
         assertEq(contractNoStory.owner(), address(this));
     }
 
-    ///////////////////// STORY ENABLED/DISABLED TESTS /////////////////////
-
-    function testSetStoryEnabled(bool enabled) public {
+    function test_SetStoryEnabled(bool enabled) public {
         contractWithStory.setStoryEnabled(enabled);
         assertEq(contractWithStory.storyEnabled(), enabled);
         contractNoStory.setStoryEnabled(enabled);
         assertEq(contractNoStory.storyEnabled(), enabled);
     }
 
-    function testSetStoryEnabledNotAllowed(address addy) public {
+    function test_SetStoryEnabledNotAllowed(address addy) public {
         if (addy != address(this)) {
             vm.startPrank(addy, addy);
 
-            vm.expectRevert(NotStoryAdmin.selector);
+            vm.expectRevert(StoryContract.NotStoryAdmin.selector);
             contractWithStory.setStoryEnabled(false);
 
-            vm.expectRevert(NotStoryAdmin.selector);
+            vm.expectRevert(StoryContract.NotStoryAdmin.selector);
             contractNoStory.setStoryEnabled(true);
 
             vm.stopPrank();
         }
     }
 
-    ///////////////////// ERC165 TESTS /////////////////////
-
-    function testERC165() public {
+    function test_ERC165() public {
         assertTrue(contractWithStory.supportsInterface(type(IStory).interfaceId));
         assertTrue(contractWithStory.supportsInterface(0x0d23ecb9)); // previous IStory interfaceId
         assertTrue(contractNoStory.supportsInterface(type(IStory).interfaceId));
         assertTrue(contractNoStory.supportsInterface(0x0d23ecb9)); // previous IStory interfaceId
     }
 
-    ///////////////////// STORY ENABLED TESTS /////////////////////
-
-    function testAddCollectionStory() public {
+    function test_AddCollectionStory() public {
         vm.expectEmit(true, false, false, true, address(contractWithStory));
         emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
         contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
     }
 
-    function testExpectRevertAddCollectionStory() public {
+    function test_ExpectRevertAddCollectionStory() public {
         // revert for not being the token creator
         for (uint256 i = 0; i < 3; i++) {
             vm.prank(accounts[i], accounts[i]);
-            vm.expectRevert(NotCreator.selector);
+            vm.expectRevert(StoryContract.NotCreator.selector);
             contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
         }
     }
 
-    function testAddCreatorStory() public {
+    function test_AddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {
             uint256 id = i + 1;
             vm.expectEmit(true, true, false, true, address(contractWithStory));
@@ -103,22 +95,22 @@ contract StoryContractTest is Test {
         }
     }
 
-    function testExpectRevertAddCreatorStory() public {
+    function test_ExpectRevertAddCreatorStory() public {
         // revert for not being the token creator
         for (uint256 i = 0; i < 3; i++) {
             uint256 id = i + 1;
 
             vm.prank(accounts[i], accounts[i]);
-            vm.expectRevert(NotCreator.selector);
+            vm.expectRevert(StoryContract.NotCreator.selector);
             contractWithStory.addCreatorStory(id, "XCOPY", "I AM XCOPY");
         }
 
         // revert for not being a token that exists
-        vm.expectRevert(TokenDoesNotExist.selector);
+        vm.expectRevert(StoryContract.TokenDoesNotExist.selector);
         contractWithStory.addCreatorStory(5, "XCOPY", "I AM XCOPY");
     }
 
-    function testAddStory() public {
+    function test_AddStory() public {
         for (uint256 i = 0; i < 3; i++) {
             uint256 id = i + 1;
 
@@ -134,29 +126,27 @@ contract StoryContractTest is Test {
         contractWithStory.addStory(4, "NOT XCOPY", "I AM NOT XCOPY");
     }
 
-    function testExpectRevertAddStory() public {
+    function tes_ExpectRevertAddStory() public {
         // revert for not being the token owner
         for (uint256 i = 0; i < 3; i++) {
             uint256 id = i + 1;
 
-            vm.expectRevert(NotTokenOwner.selector);
+            vm.expectRevert(StoryContract.NotTokenOwner.selector);
             contractWithStory.addStory(id, "NOT XCOPY", "I AM NOT XCOPY");
         }
 
         // revert for not being a token that exists
-        vm.expectRevert(TokenDoesNotExist.selector);
+        vm.expectRevert(StoryContract.TokenDoesNotExist.selector);
         contractWithStory.addStory(5, "NOT XCOPY", "I AM NOT XCOPY");
     }
 
-    ///////////////////// STORY DISABLED TESTS /////////////////////
-
-    function testExpectRevertDisabledAddCollectionStory() public {
+    function test_ExpectEmitDisabledAddCollectionStory() public {
         vm.expectEmit(true, false, false, true, address(contractWithStory));
         emit CollectionStory(address(this), "XCOPY", "I AM XCOPY");
         contractWithStory.addCollectionStory("XCOPY", "I AM XCOPY");
     }
 
-    function testExpectRevertDisabledAddCreatorStory() public {
+    function test_ExpectEmitDisabledAddCreatorStory() public {
         for (uint256 i = 0; i < 4; i++) {
             uint256 id = i + 1;
             vm.expectEmit(true, true, false, true, address(contractWithStory));
@@ -165,22 +155,20 @@ contract StoryContractTest is Test {
         }
     }
 
-    function testExpectRevertDisabledAddStory() public {
+    function test_ExpectRevertDisabledAddStory() public {
         for (uint256 i = 0; i < 3; i++) {
             uint256 id = i + 1;
 
-            vm.expectRevert(StoryNotEnabled.selector);
+            vm.expectRevert(StoryContract.StoryNotEnabled.selector);
             vm.prank(accounts[i], accounts[i]);
             contractNoStory.addStory(id, "NOT XCOPY", "I AM NOT XCOPY");
         }
 
-        vm.expectRevert(StoryNotEnabled.selector);
+        vm.expectRevert(StoryContract.StoryNotEnabled.selector);
         contractNoStory.addStory(4, "NOT XCOPY", "I AM NOT XCOPY");
     }
 
-    ///////////////////// TRANSFER AND WRITE STORY TESTS /////////////////////
-
-    function testTransferAndAddCreatorStory() public {
+    function test_TransferAndAddCreatorStory() public {
         // contract with story
         vm.prank(accounts[0], accounts[0]);
         contractWithStory.transferFrom(accounts[0], accounts[1], 1);
@@ -196,7 +184,7 @@ contract StoryContractTest is Test {
         contractNoStory.addCreatorStory(1, "XCOPY", "I AM XCOPY");
     }
 
-    function testTransferAndAddStory() public {
+    function test_TransferAndAddStory() public {
         // contract with story
         vm.prank(accounts[0], accounts[0]);
         contractWithStory.transferFrom(accounts[0], accounts[1], 1);
@@ -208,20 +196,18 @@ contract StoryContractTest is Test {
         // contract no story
         vm.prank(accounts[0], accounts[0]);
         contractNoStory.transferFrom(accounts[0], accounts[1], 1);
-        vm.expectRevert(StoryNotEnabled.selector);
+        vm.expectRevert(StoryContract.StoryNotEnabled.selector);
         vm.prank(accounts[1], accounts[1]);
         contractNoStory.addStory(1, "NOT XCOPY", "I AM NOT XCOPY");
     }
 
-    ///////////////////// MAX GAS TESTS /////////////////////
-
-    function test5000WordGasEstimate() public {
+    function test_5000WordGasEstimate() public {
         string memory story = vm.readFile("test/file_utils/lorem.txt");
 
         contractWithStory.addCreatorStory(1, "Socrates", story);
     }
 
-    function testFuzzGas(string calldata story) public {
+    function test_FuzzGas(string calldata story) public {
         contractWithStory.addCreatorStory(1, "Socrates", story);
     }
 }
