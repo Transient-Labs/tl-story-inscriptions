@@ -46,16 +46,15 @@ You can write whatever you want down here!
 The Story Contract supports ERC-165. The Interface ID is `0x2464f17b`. The previous interface id that is supported in versions lower than 5.0.0 is `0x0d23ecb9`.
 
 ## 6. Gas Cost
-Based on local testing, the gas cost of a 5000 word story (a research paper) costs `694795 gas`. At 100 gwei gas, this coverts to a gas cost of `0.0694795 ETH`. This is extrememly gas efficient. Stories will also likely be much shorter in length and submitted when gas is lower.
+Based on local testing, the gas cost of a 5000 word story (a research paper) costs `255867 gas`. At 100 gwei gas, this coverts to a gas cost of `0.0255867 ETH`. This is extrememly gas efficient compared to other methods. Stories will also likely be much shorter in length and submitted when gas is lower.
 
 ## Testing
-You should run the test suite with `make test_suite`. 
+You should run the test suite with the Makefile. 
 
 This loops through the following solidity versions:
-- 0.8.17
-- 0.8.18
-- 0.8.19
 - 0.8.20
+- 0.8.21
+- 0.8.22
 
 Any untested Solidity versions are NOT reccomended for use.
 
