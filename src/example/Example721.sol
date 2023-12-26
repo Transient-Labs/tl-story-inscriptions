@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC721} from "lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import {Ownable} from "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
+import {ERC721} from "openzeppelin/token/ERC721/ERC721.sol";
+import {Ownable} from "openzeppelin/access/Ownable.sol";
 import {IStory} from "src/IStory.sol";
 
 contract Example721 is ERC721, Ownable, IStory {

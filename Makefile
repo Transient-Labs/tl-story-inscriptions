@@ -14,7 +14,6 @@ remove:
 install:
 	forge install foundry-rs/forge-std --no-commit
 	forge install OpenZeppelin/openzeppelin-contracts@v5.0.1 --no-commit
-	forge install OpenZeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit
 
 # Update the modules
 update: remove install
